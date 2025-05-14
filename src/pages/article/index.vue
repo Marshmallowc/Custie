@@ -1,5 +1,5 @@
 <template>
-  <view class="article-container">
+  <view class="article-container safe-area-top">
     <!-- 加载状态 -->
     <view class="loading-container" v-if="loading">
       <view class="loading-spinner"></view>
@@ -314,9 +314,24 @@ const getAvatarUrl = (avatar) => {
 const getQuestionDetail = async (id) => {
   console.log('正在获取问题详情，ID:', id, '类型:', typeof id);
   
+  // 确保ID是字符串
+  const idStr = String(id).trim();
+  
+  if (!idStr) {
+    console.error('无效的问题ID');
+    uni.showToast({
+      title: '参数错误：无效的问题ID',
+      icon: 'none'
+    });
+    setTimeout(() => {
+      uni.navigateBack();
+    }, 1500);
+    return;
+  }
+  
   try {
     // 调用API获取问题详情
-    const questionDetail = await store.fetchQuestionDetail(id);
+    const questionDetail = await store.fetchQuestionDetail(idStr);
     
     if (questionDetail) {
       console.log('成功获取问题详情:', JSON.stringify({
@@ -327,11 +342,11 @@ const getQuestionDetail = async (id) => {
       }));
       
       // 设置问题ID
-      questionId.value = id;
+      questionId.value = idStr;
       
       // 更新文章数据
       article.value = {
-        id: questionDetail._id || questionDetail.id || id,
+        id: questionDetail._id || questionDetail.id || idStr,
         title: questionDetail.title || '无标题',
         userName: questionDetail.userName || '匿名用户',
         avatar: questionDetail.avatar || '/static/avatar/default1.png',
@@ -341,17 +356,17 @@ const getQuestionDetail = async (id) => {
         answerCount: questionDetail.answerCount || 0,
         isLiked: false, // API 未提供
         isDisliked: false, // API 未提供
-        isFavorite: store.isFavorite(id) // 检查是否已收藏
+        isFavorite: store.isFavorite(idStr) // 检查是否已收藏
       };
       
       // 检查并打印头像URL以便调试
       console.log('文章头像URL:', article.value.avatar);
       
       // 获取回答列表
-      loadAnswers(id);
+      loadAnswers(idStr);
     } else {
       // 如果获取不到问题详情，显示错误提示
-      console.error('无法获取问题详情:', id);
+      console.error('无法获取问题详情:', idStr);
       uni.showToast({
         title: '问题不存在或已被删除',
         icon: 'none'
@@ -447,14 +462,68 @@ const formatDateTime = (dateTimeStr) => {
 
 // 页面加载
 onMounted(() => {
-  // 获取页面参数
+  // 获取页面参数 - 适配不同平台
+  let id = null;
+  
+  // 方式1：通过getCurrentPages获取（兼容性更好）
   const pages = getCurrentPages();
   const currentPage = pages[pages.length - 1];
-  const options = currentPage.$page?.options;
   
-  if (options && options.id) {
+  // 不同平台参数获取方式不同
+  if (currentPage.$page && currentPage.$page.options) {
+    // uni-app Vue3方式
+    id = currentPage.$page.options.id;
+    console.log('通过$page.options获取参数:', id);
+  } else if (currentPage.options) {
+    // 小程序原生方式
+    id = currentPage.options.id;
+    console.log('通过options获取参数:', id);
+  } else if (currentPage.$vm && currentPage.$vm.$mp && currentPage.$vm.$mp.query) {
+    // uni-app Vue2方式
+    id = currentPage.$vm.$mp.query.id;
+    console.log('通过$mp.query获取参数:', id);
+  }
+  
+  // 方式2：通过uni-app自带API获取（仅适用于uni-app）
+  if (!id) {
+    try {
+      const options = uni.getLaunchOptionsSync();
+      if (options && options.query && options.query.id) {
+        id = options.query.id;
+        console.log('通过getLaunchOptionsSync获取参数:', id);
+      }
+    } catch (error) {
+      console.error('getLaunchOptionsSync错误:', error);
+    }
+  }
+  
+  // 方式3：适用于微信小程序
+  if (!id) {
+    try {
+      // @ts-ignore
+      if (wx && wx.getCurrentInstance) {
+        const instance = wx.getCurrentInstance();
+        const query = instance.query;
+        if (query && query.id) {
+          id = query.id;
+          console.log('通过wx.getCurrentInstance获取参数:', id);
+        }
+      }
+    } catch (error) {
+      console.error('wx.getCurrentInstance错误:', error);
+    }
+  }
+  
+  // 确保ID是字符串类型
+  if (id && typeof id !== 'string') {
+    id = String(id);
+  }
+  
+  console.log('最终获取到的ID:', id, '类型:', typeof id);
+  
+  if (id) {
     // 直接使用字符串ID，不要转换为数字，因为MongoDB使用的是ObjectId
-    getQuestionDetail(options.id);
+    getQuestionDetail(id);
   } else {
     loading.value = false;
     uni.showToast({
@@ -474,6 +543,11 @@ onMounted(() => {
   background-color: #fff;
   min-height: 100vh;
   padding-bottom: 120rpx; // 为底部互动栏留出空间
+  padding-top: 80rpx; // 增加顶部间距，避免被手机摄像头遮挡
+  /* #ifdef MP-WEIXIN */
+  padding-top: calc(80rpx + constant(safe-area-inset-top)); /* 兼容 iOS < 11.2 */
+  padding-top: calc(80rpx + env(safe-area-inset-top)); /* 兼容 iOS >= 11.2 */
+  /* #endif */
 }
 
 // 加载状态
@@ -505,6 +579,7 @@ onMounted(() => {
   font-weight: bold;
   color: #333;
   line-height: 1.4;
+  margin-top: 20rpx;
   margin-bottom: 20rpx;
 }
 

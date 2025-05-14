@@ -87,8 +87,8 @@ const navigateTo = (url) => {
       uni.redirectTo({
         url,
         fail: () => {
-          // 如果还失败，可能是tabBar页面，使用switchTab
-          uni.switchTab({
+          // 如果还失败，尝试使用reLaunch跳转
+          uni.reLaunch({
             url,
             fail: (err) => {
               console.error('导航失败:', err);

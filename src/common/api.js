@@ -1,6 +1,6 @@
 // API服务封装
-const BASE_URL = 'https://potljcwiotnr.sealoshzh.site/api';
-const SERVER_URL = 'https://potljcwiotnr.sealoshzh.site'; // 服务器基础URL，用于拼接相对路径
+const BASE_URL = 'https://phrzkdfnowea.sealoshzh.site/api';
+const SERVER_URL = 'https://phrzkdfnowea.sealoshzh.site'; // 服务器基础URL，用于拼接相对路径
 
 // 将相对路径转换为完整URL
 const getFullUrl = (path) => {

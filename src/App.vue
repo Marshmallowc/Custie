@@ -29,6 +29,9 @@ page {
     Segoe UI, Arial, Roboto, 'PingFang SC', 'miui', 'Hiragino Sans GB', 'Microsoft Yahei',
     sans-serif;
   box-sizing: border-box;
+  /* 支持安全区域 */
+  padding-bottom: constant(safe-area-inset-bottom); /* 兼容 iOS < 11.2 */
+  padding-bottom: env(safe-area-inset-bottom); /* 兼容 iOS >= 11.2 */
 }
 
 /* 清除默认样式 */
@@ -61,6 +64,17 @@ view, text, input, button, textarea {
 /* 通用边距 */
 .page-container {
   padding: 30rpx;
+}
+
+/* 安全区域适配 */
+.safe-area-top {
+  padding-top: constant(safe-area-inset-top); /* 兼容 iOS < 11.2 */
+  padding-top: env(safe-area-inset-top); /* 兼容 iOS >= 11.2 */
+}
+
+.safe-area-bottom {
+  padding-bottom: constant(safe-area-inset-bottom); /* 兼容 iOS < 11.2 */
+  padding-bottom: env(safe-area-inset-bottom); /* 兼容 iOS >= 11.2 */
 }
 
 /* 阴影 */

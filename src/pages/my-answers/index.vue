@@ -1,5 +1,5 @@
 <template>
-  <view class="my-answers-container">
+  <view class="my-answers-container safe-area-top">
     <!-- 头部 -->
     <view class="header">
       <view class="left-section">
@@ -131,7 +131,7 @@ const goToArticle = (item) => {
 
 // 跳转到回答页面
 const goToAnswer = () => {
-  uni.switchTab({
+  uni.reLaunch({
     url: '/pages/index/index'
   });
 };
@@ -196,6 +196,11 @@ onMounted(() => {
   flex-direction: column;
   min-height: 100vh;
   background-color: #f5f5f5;
+  padding-top: 80rpx;
+  /* #ifdef MP-WEIXIN */
+  padding-top: calc(80rpx + constant(safe-area-inset-top)); /* 兼容 iOS < 11.2 */
+  padding-top: calc(80rpx + env(safe-area-inset-top)); /* 兼容 iOS >= 11.2 */
+  /* #endif */
 }
 
 .loading-container {
@@ -222,11 +227,12 @@ onMounted(() => {
 }
 
 .header {
-  padding: 30rpx 40rpx;
+  padding: 20rpx 40rpx 30rpx;
   background-color: #fff;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #f0f0f0;
+  margin-top: 10rpx;
   
   .left-section {
     display: flex;

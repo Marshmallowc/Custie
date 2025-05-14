@@ -219,11 +219,19 @@ export const store = reactive({
   
   // 获取问题详情（从API或本地备份）
   async fetchQuestionDetail(questionId) {
-    console.log('尝试获取问题详情, ID:', questionId);
+    console.log('尝试获取问题详情, ID:', questionId, '类型:', typeof questionId);
+    
+    // 确保ID是字符串
+    const idStr = String(questionId).trim();
+    
+    if (!idStr) {
+      console.error('无效的问题ID');
+      return null;
+    }
     
     try {
       // 先尝试从API获取问题详情
-      const response = await api.question.getQuestionDetail(questionId);
+      const response = await api.question.getQuestionDetail(idStr);
       console.log('API获取问题详情返回:', JSON.stringify(response));
       
       if (response.code === 200) {
@@ -246,7 +254,7 @@ export const store = reactive({
             response.data.avatar = getRandomDefaultAvatar();
             console.log('问题详情-用户使用默认头像(从user对象):', response.data.avatar);
           }
-        } else if (response.data.userName || response.data.username) {
+        } else {
           // 直接使用问题对象中的用户名
           response.data.userName = response.data.userName || response.data.username || '未知用户';
           
@@ -258,28 +266,33 @@ export const store = reactive({
             response.data.avatar = getRandomDefaultAvatar();
             console.log('问题详情-用户使用默认头像(直接):', response.data.avatar);
           }
-        } else {
-          // 如果没有任何用户信息，使用默认值
-          response.data.userName = '未知用户';
-          response.data.avatar = getRandomDefaultAvatar();
-          console.log('问题详情-完全没有用户信息，使用默认头像:', response.data.avatar);
+        }
+        
+        // 确保问题有id字段，支持微信小程序环境
+        if (!response.data.id && response.data._id) {
+          response.data.id = response.data._id;
         }
         
         return response.data;
       } else {
         console.error('获取问题详情失败', response);
         // API请求失败，尝试从本地问题列表中查找
-        return this.getLocalQuestionDetail(questionId);
+        return this.getLocalQuestionDetail(idStr);
       }
     } catch (error) {
       console.error('获取问题详情异常', error);
       // 发生错误，尝试从本地问题列表中查找
-      return this.getLocalQuestionDetail(questionId);
+      return this.getLocalQuestionDetail(idStr);
     }
   },
   
   // 从本地问题列表查找问题详情
   getLocalQuestionDetail(questionId) {
+    console.log('尝试从本地获取问题详情, ID:', questionId);
+    
+    // 确保ID是字符串
+    const idStr = String(questionId).trim();
+    
     // 确保问题列表已加载
     if (this.questions.length === 0) {
       this.questions = initialQuestions;
@@ -290,24 +303,28 @@ export const store = reactive({
     
     // 先从当前问题列表中查找
     let question = this.questions.find(q => 
-      (q._id === questionId) || 
-      (q.id && q.id.toString() === questionId) ||
-      (q._id && typeof q._id === 'object' && q._id.toString() === questionId)
+      (q._id && String(q._id) === idStr) || 
+      (q.id && String(q.id) === idStr)
     );
     
     // 如果在当前列表中找不到，再从初始问题列表中查找
     if (!question) {
       question = initialQuestions.find(q => 
-        (q.id && q.id.toString() === questionId) || 
-        (q._id === questionId)
+        (q.id && String(q.id) === idStr) || 
+        (q._id && String(q._id) === idStr)
       );
     }
     
     // 如果仍然找不到，但我们知道这是MongoDB的ObjectId格式
-    if (!question && questionId.length >= 24) {
+    if (!question && idStr.length >= 24) {
       // 这可能是一个有效的MongoDB ObjectId
-      console.log('MongoDB ObjectId格式但本地找不到数据:', questionId);
+      console.log('MongoDB ObjectId格式但本地找不到数据:', idStr);
       return null;
+    }
+    
+    // 确保返回的问题对象有id字段
+    if (question && !question.id && question._id) {
+      question.id = question._id;
     }
     
     return question || null;

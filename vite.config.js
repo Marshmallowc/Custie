@@ -5,4 +5,5 @@ export default defineConfig({
   plugins: [
     uni(),
   ],
+  base: '/', // Base path for all assets
 })

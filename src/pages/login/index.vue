@@ -111,7 +111,7 @@ const handleLogin = async () => {
 			
 			// 登录成功后跳转到首页
 			setTimeout(() => {
-				uni.switchTab({
+				uni.reLaunch({
 					url: '/pages/index/index'
 				});
 			}, 1500);

@@ -169,18 +169,18 @@ const handleRegister = async () => {
 		
 		// 注册成功
 		if (result.code === 200) {
-			uni.hideLoading();
-			uni.showToast({
-				title: '注册成功',
-				icon: 'success',
-				duration: 1500,
-				success: () => {
-					// 注册成功后返回登录页面
-					setTimeout(() => {
-						uni.navigateBack();
-					}, 1500);
-				}
-			});
+		uni.hideLoading();
+		uni.showToast({
+			title: '注册成功',
+			icon: 'success',
+			duration: 1500,
+			success: () => {
+				// 注册成功后返回登录页面
+				setTimeout(() => {
+					uni.navigateBack();
+				}, 1500);
+			}
+		});
 		} else {
 			// 注册失败
 			uni.hideLoading();

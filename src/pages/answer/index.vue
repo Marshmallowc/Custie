@@ -1,5 +1,5 @@
 <template>
-  <view class="answer-container">
+  <view class="answer-container safe-area-top">
     <!-- 头部 -->
     <view class="header">
       <view class="left-section">
@@ -120,7 +120,7 @@ const goBack = () => {
     delta: 1,
     fail: () => {
       // 如果无法返回（例如直接打开此页面），则跳转到首页
-      uni.switchTab({
+      uni.reLaunch({
         url: '/pages/index/index'
       });
     }
@@ -146,15 +146,21 @@ const goToWriteAnswer = (question) => {
   flex-direction: column;
   min-height: 100vh;
   background-color: #f5f5f5;
+  padding-top: 80rpx; // 增加顶部间距，避免被手机摄像头遮挡
+  /* #ifdef MP-WEIXIN */
+  padding-top: calc(80rpx + constant(safe-area-inset-top)); /* 兼容 iOS < 11.2 */
+  padding-top: calc(80rpx + env(safe-area-inset-top)); /* 兼容 iOS >= 11.2 */
+  /* #endif */
 }
 
 .header {
-  padding: 30rpx 40rpx;
+  padding: 20rpx 40rpx 30rpx;
   background-color: #fff;
   border-bottom: 1px solid #f0f0f0;
   display: flex;
   align-items: center;
   position: relative;
+  margin-top: 10rpx;
   
   .left-section {
     display: flex;

@@ -2,9 +2,9 @@
 
 ## 基础信息
 
-- **API根地址**: `https://potljcwiotnr.sealoshzh.site`
+- **API根地址**: `https://phrzkdfnowea.sealoshzh.site`
 - **基础URL**: `/api`
-- **完整基础URL**: `https://potljcwiotnr.sealoshzh.site/api`
+- **完整基础URL**: `https://phrzkdfnowea.sealoshzh.site/api`
 - **数据格式**: JSON
 - **认证方式**: Bearer Token
 - **状态码**: 

@@ -53,7 +53,7 @@ defineEmits(['edit', 'settings']);
   border-radius: 16rpx;
   box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.05);
   padding: 30rpx;
-  margin-bottom: 20rpx;
+  margin: 30rpx 30rpx 20rpx;
   
   .user-info {
     display: flex;

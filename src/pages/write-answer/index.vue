@@ -1,5 +1,5 @@
 <template>
-  <view class="write-answer-container">
+  <view class="write-answer-container safe-area-top">
     <!-- 头部 -->
     <view class="header">
       <view class="left-section">
@@ -159,14 +159,20 @@ const submitAnswer = async () => {
   flex-direction: column;
   min-height: 100vh;
   background-color: #fff;
+  padding-top: 80rpx;
+  /* #ifdef MP-WEIXIN */
+  padding-top: calc(80rpx + constant(safe-area-inset-top)); /* 兼容 iOS < 11.2 */
+  padding-top: calc(80rpx + env(safe-area-inset-top)); /* 兼容 iOS >= 11.2 */
+  /* #endif */
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30rpx 40rpx;
+  padding: 20rpx 40rpx 30rpx;
   border-bottom: 1px solid #f0f0f0;
+  margin-top: 10rpx;
   
   .left-section {
     display: flex;

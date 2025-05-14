@@ -105,31 +105,5 @@
 		"navigationBarTitleText": "速问",
 		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#F8F8F8"
-	},
-	"tabBar": {
-		"color": "#999999",
-		"selectedColor": "#1677ff",
-		"backgroundColor": "#FFFFFF",
-		"borderStyle": "black",
-		"list": [
-			{
-				"pagePath": "pages/index/index",
-				"text": "首页",
-				"iconPath": "static/tabbar/home.png",
-				"selectedIconPath": "static/tabbar/home-active.png"
-			},
-			{
-				"pagePath": "pages/index/index",
-				"text": "消息",
-				"iconPath": "static/tabbar/message.png",
-				"selectedIconPath": "static/tabbar/message-active.png"
-			},
-			{
-				"pagePath": "pages/index/index",
-				"text": "我的",
-				"iconPath": "static/tabbar/user.png",
-				"selectedIconPath": "static/tabbar/user-active.png"
-			}
-		]
 	}
 }

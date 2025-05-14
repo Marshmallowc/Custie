@@ -262,15 +262,23 @@ onReachBottom(() => {
 const goToArticle = (item) => {
   // 获取问题ID，支持不同的属性名
   let questionId = null;
-  if (item._id) {
-    // MongoDB直接返回的字符串ID
+  
+  // 优先使用字符串形式的ID
+  if (item._id && typeof item._id === 'string') {
     questionId = item._id;
-  } else if (item._id && typeof item._id === 'object' && item._id.toString) {
-    // 处理可能是ObjectId对象的情况
-    questionId = item._id.toString();
-  } else if (item.id) {
-    // 兼容使用id属性的情况
+  } else if (item.id && typeof item.id === 'string') {
     questionId = item.id;
+  } else if (item._id && typeof item._id === 'object' && item._id.toString) {
+    // 对象形式的ID转为字符串
+    questionId = item._id.toString();
+  } else if (item.id && typeof item.id !== 'string') {
+    // 非字符串ID转为字符串
+    questionId = String(item.id);
+  } else if (item._id) {
+    // 其他情况，尝试转字符串
+    questionId = String(item._id);
+  } else if (item.id) {
+    questionId = String(item.id);
   }
   
   // 输出调试信息
@@ -278,7 +286,8 @@ const goToArticle = (item) => {
     title: item.title,
     _id: item._id,
     id: item.id,
-    finalId: questionId
+    finalId: questionId,
+    idType: typeof questionId
   }));
   
   // 确保有有效的ID
@@ -290,9 +299,12 @@ const goToArticle = (item) => {
     return;
   }
   
-  // 跳转到文章详情页
+  // 确保ID是字符串类型
+  const idStr = String(questionId);
+  
+  // 跳转到文章详情页，使用简单字符串参数
   uni.navigateTo({
-    url: `/pages/article/index?id=${questionId}`
+    url: `/pages/article/index?id=${idStr}`
   });
 };
 
@@ -310,13 +322,13 @@ const formatDateTime = (dateTimeStr) => {
   }
   
   try {
-    const date = new Date(dateTimeStr);
-    
-    // 检查日期是否有效
-    if (isNaN(date.getTime())) {
-      return dateTimeStr;
-    }
-    
+  const date = new Date(dateTimeStr);
+  
+  // 检查日期是否有效
+  if (isNaN(date.getTime())) {
+    return dateTimeStr;
+  }
+  
     // 计算相对时间
     const now = new Date();
     const diffMs = now - date;

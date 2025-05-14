@@ -108,7 +108,7 @@ const goToArticle = (item) => {
 
 // 跳转到首页
 const goToIndex = () => {
-  uni.switchTab({
+  uni.reLaunch({
     url: '/pages/index/index'
   });
 };

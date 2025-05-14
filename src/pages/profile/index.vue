@@ -1,5 +1,5 @@
 <template>
-  <view class="profile-container">
+  <view class="profile-container safe-area-top">
     <!-- 加载状态 -->
     <view class="loading-container" v-if="loading">
       <view class="loading-spinner"></view>
@@ -352,6 +352,11 @@ onShow(() => {
   min-height: 100vh;
   background-color: #f5f5f5;
   padding-bottom: 100rpx; // 为底部导航栏留出空间
+  padding-top: 80rpx; // 增加顶部间距，避免被手机摄像头遮挡
+  /* #ifdef MP-WEIXIN */
+  padding-top: calc(80rpx + constant(safe-area-inset-top)); /* 兼容 iOS < 11.2 */
+  padding-top: calc(80rpx + env(safe-area-inset-top)); /* 兼容 iOS >= 11.2 */
+  /* #endif */
 }
 
 // 加载状态
